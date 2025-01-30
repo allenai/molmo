@@ -129,7 +129,7 @@ export HF_HOME=/data/molmo/huggingface
 Data can then be downloaded with:
 
 ```bash
-python3 scripts/download.py all --n_proc 12
+python3 scripts/download_data.py all --n_proc 12
 ```
 
 Downloading the pixmo datasets requires downloading images from URLs. The download script
