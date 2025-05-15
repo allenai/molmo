@@ -80,33 +80,33 @@ def main(cfg: TrainConfig) -> None:
         log.info("Configuration:")
         log.info(cfg)
 
-        if cfg.allow_resume:
-            config_path = Path(cfg.save_folder) / "config.yaml"
-            if config_path.exists():
-                lastest_checkpoint = Path(cfg.save_folder) / "latest"
-                if lastest_checkpoint.exists():
-                    logging.info(f"Resuming from {lastest_checkpoint}")
-                    saved_config = TrainConfig.load(config_path)
-                    if saved_config.model != cfg.model:
-                        logging.warning("Model config does not match the one resuming from")
-                    if saved_config.optimizer != cfg.optimizer:
-                        logging.warning("Optimizer config does not match the one resuming from")
-                    if saved_config.data != cfg.data:
-                        logging.warning("Data config does not match the one resuming from")
-                    cfg.load_path = str(lastest_checkpoint)
-                else:
-                    logging.info("Not resuming since no latest checkpoint found")
-
-        if not cfg.dry_run and (cfg.load_path is None or Path(cfg.load_path).parent != Path(cfg.save_folder)):
-            # Save config.
-            save_path = Path(cfg.save_folder) / "config.yaml"
-            if save_path.is_file() and not cfg.save_overwrite:
-                raise OLMoConfigurationError(f"{save_path} already exists, use --save_overwrite to overwrite")
+    if cfg.allow_resume:
+        config_path = Path(cfg.save_folder) / "config.yaml"
+        if config_path.exists():
+            lastest_checkpoint = Path(cfg.save_folder) / "latest"
+            if lastest_checkpoint.exists():
+                logging.info(f"Resuming from {lastest_checkpoint}")
+                saved_config = TrainConfig.load(config_path)
+                if saved_config.model != cfg.model:
+                    logging.warning("Model config does not match the one resuming from")
+                if saved_config.optimizer != cfg.optimizer:
+                    logging.warning("Optimizer config does not match the one resuming from")
+                if saved_config.data != cfg.data:
+                    logging.warning("Data config does not match the one resuming from")
+                cfg.load_path = str(lastest_checkpoint)
             else:
-                log.info(f"Saving config to {save_path}")
-                save_path.parent.mkdir(exist_ok=True, parents=True)
-                cfg.save(save_path)
-            del save_path
+                logging.info("Not resuming since no latest checkpoint found")
+
+    if not cfg.dry_run and (cfg.load_path is None or Path(cfg.load_path).parent != Path(cfg.save_folder)):
+        # Save config.
+        save_path = Path(cfg.save_folder) / "config.yaml"
+        if save_path.is_file() and not cfg.save_overwrite:
+            raise OLMoConfigurationError(f"{save_path} already exists, use --save_overwrite to overwrite")
+        else:
+            log.info(f"Saving config to {save_path}")
+            save_path.parent.mkdir(exist_ok=True, parents=True)
+            cfg.save(save_path)
+        del save_path
 
     barrier()
 
