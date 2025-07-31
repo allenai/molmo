@@ -67,7 +67,8 @@ def _download_images(args):
     retries = Retry(
         total=3,
         backoff_factor=1,
-        status_forcelist=[429]
+        status_forcelist=[429],
+        respect_retry_after_header=False
     )
     session.mount('http://', HTTPAdapter(max_retries=retries))
     session.mount('https://', HTTPAdapter(max_retries=retries))
@@ -79,7 +80,7 @@ def _download_images(args):
         return DownloadError(url, ValueError('Not in cache'))
     else:
         try:
-            response = session.get(url, timeout=5)
+            response = session.get(url, **kwargs)
             response.raise_for_status()
             image_bytes = response.content
         except Exception as e:
