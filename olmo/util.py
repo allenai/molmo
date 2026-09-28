@@ -844,7 +844,9 @@ def extract_points(text, image_w, image_h):
             point = point * np.array([image_w, image_h])
             all_points.append(point)
 
-    for match in re.finditer(r"\(([0-9]+\.[0-9]),? ?([0-9]+\.[0-9])\)", text):
+    # Click(...) was recorded above. This pattern also matches those
+    # parentheses, so the same point would be returned a second time.
+    for match in re.finditer(r"(?<!Click)\(([0-9]+\.[0-9]),? ?([0-9]+\.[0-9])\)", text):
         try:
             point = [float(match.group(i)) for i in range(1, 3)]
         except ValueError:
